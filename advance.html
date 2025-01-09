@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reflection Bot Payment</title>
+    <link rel="icon" href="assets/logo-favicon.png" type="image/png" />
+
+    <style>
+      /* Base Styles */
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background: url("assets/Site Background.png") no-repeat center center
+          fixed;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .payment-container {
+        background-color: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        width: 400px;
+        text-align: center;
+      }
+
+      .payment-container h1 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+        color: black;
+      }
+
+      .payment-container p {
+        color: #333;
+        font-size: 1rem;
+        margin-bottom: 30px;
+      }
+
+      /* Form Styling */
+      .payment-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .payment-form label {
+        font-size: 1rem;
+        font-weight: bold;
+        color: #333;
+        text-align: left;
+      }
+
+      .payment-form input {
+        padding: 10px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        outline: none;
+        transition: border 0.3s ease;
+      }
+
+      .payment-form input:focus {
+        border-color: #007bff;
+      }
+
+      /* Stripe Button */
+      .stripe-button {
+        background-color: #a76c1a;
+        color: white;
+        padding: 12px;
+        font-size: 1.2rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .stripe-button:hover {
+        background-color: rgb(201, 132, 4);
+      }
+
+      /* Responsive Styling */
+      @media screen and (max-width: 768px) {
+        .payment-container {
+          width: 90%;
+          padding: 20px;
+        }
+
+        .payment-container h1 {
+          font-size: 1.8rem;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="payment-container">
+      <h1>Reflection Bot Payment</h1>
+      <p>
+        Complete the payment process below. Don't forget to include your Discord
+        username.
+      </p>
+
+      <!-- Payment Form -->
+      <form id="payment-form" class="payment-form">
+        <!-- Discord Username Field -->
+        <label for="discord-username">Discord Username</label>
+        <input
+          type="text"
+          id="discord-username"
+          name="discord-username"
+          placeholder="Enter your Discord username"
+          required />
+
+        <!-- Stripe Payment Method -->
+        <div id="card-element"></div>
+
+        <!-- Payment Button -->
+        <button class="stripe-button" id="submit" type="submit">
+          Pay with Stripe
+        </button>
+
+        <!-- Payment Status -->
+        <div id="payment-status"></div>
+      </form>
+    </div>
+
+    <!-- Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+      // Initialize Stripe
+      const stripe = Stripe(
+        "pk_live_51Or6KLEXzKb54M895sy2fxQliHvAcduRgmkrLya6ooXTPwNmTuR16DtTXwFXwxxWkoid5nzEKxT83b8wRG4zFS5E00b9sFQUtX"
+      ); // Replace with your Stripe publishable key
+      const elements = stripe.elements();
+
+      // Create an instance of the card Element
+      const card = elements.create("card");
+      card.mount("#card-element");
+
+      // Handle form submission
+      const form = document.getElementById("payment-form");
+      const statusDiv = document.getElementById("payment-status");
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        // Show loading status
+        statusDiv.innerHTML = "Processing payment...";
+
+        const { token, error } = await stripe.createToken(card);
+
+        if (error) {
+          // Display error message
+          statusDiv.innerHTML = `Error: ${error.message}`;
+        } else {
+          const discordUsername =
+            document.getElementById("discord-username").value;
+
+          const response = await fetch("/api/stripe", {
+            // Vercel function endpoint
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              token: token.id,
+              discordUsername: discordUsername,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            // Payment successful
+            statusDiv.innerHTML = "Payment successful! Thank you.";
+          } else {
+            // Payment failed
+            statusDiv.innerHTML = `Payment failed: ${data.message}`;
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
