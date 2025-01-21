@@ -19,14 +19,51 @@ exports.handler = async (event) => {
             throw new Error("Discord webhook URL is not configured.");
         }
 
-        const message = {
-            content: `**New Job Application**\n\n**Discord Username:** ${discordUsername}\n**Email:** ${email}\n**Why they want the job:** ${whyJob}\n**How they can benefit Reflection:** ${benefit}\n**Experience:**\n${experience}\n**Extra Notes:**\n${extraNotes || "None"}`,
+        // Embed structure for Discord
+        const embed = {
+            title: "New Job Application",
+            color: 3447003, // Green color (can be changed to match your theme)
+            fields: [
+                {
+                    name: "Discord Username",
+                    value: discordUsername,
+                    inline: true,
+                },
+                {
+                    name: "Email",
+                    value: email,
+                    inline: true,
+                },
+                {
+                    name: "Why do they want the job?",
+                    value: whyJob || "No response",
+                },
+                {
+                    name: "How can they benefit Reflection?",
+                    value: benefit || "No response",
+                },
+                {
+                    name: "Experience",
+                    value: experience || "No experience listed",
+                },
+                {
+                    name: "Extra Notes",
+                    value: extraNotes || "No additional notes",
+                },
+            ],
+            footer: {
+                text: "Job Application",
+            },
+            timestamp: new Date(),
         };
 
+        // Sending the embed to Discord
         const response = await fetch(webhookURL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(message),
+            body: JSON.stringify({
+                embeds: [embed],
+            }),
         });
 
         if (!response.ok) {
