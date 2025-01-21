@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Job Title 1</title>
+    <script
+      src="https://kit.fontawesome.com/a076d05399.js"
+      crossorigin="anonymous"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f9;
+      }
+      .container {
+        max-width: 900px;
+        margin: 30px auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        font-size: 28px;
+        margin-bottom: 20px;
+        color: #333;
+      }
+      .section {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+      .section i {
+        font-size: 20px;
+        color: #5cb85c;
+        margin-right: 10px;
+      }
+      .section h2 {
+        font-size: 18px;
+        margin: 0;
+        color: #333;
+      }
+      .section p {
+        margin: 0;
+        font-size: 16px;
+        color: #666;
+        margin-left: 10px;
+      }
+      button {
+        background-color: #5cb85c;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 18px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #4cae4c;
+      }
+      #applicationForm {
+        display: none;
+        margin-top: 20px;
+        flex-direction: column;
+      }
+      label {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      input,
+      textarea {
+        margin-bottom: 15px;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        width: 100%;
+      }
+      textarea {
+        resize: vertical;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Job Title 1</h1>
+
+      <div class="section">
+        <i class="fas fa-dollar-sign"></i>
+        <h2>Pay Rate:</h2>
+        <p>$25/hour</p>
+      </div>
+      <div class="section">
+        <i class="fas fa-map-marker-alt"></i>
+        <h2>Location:</h2>
+        <p>Remote</p>
+      </div>
+      <div class="section">
+        <i class="fas fa-clipboard-list"></i>
+        <h2>Description:</h2>
+        <p>
+          This is a detailed description of Job Title 1, outlining key
+          responsibilities, qualifications, and benefits.
+        </p>
+      </div>
+      <div class="section">
+        <i class="fas fa-clock"></i>
+        <h2>Hours:</h2>
+        <p>Part-time</p>
+      </div>
+
+      <button onclick="toggleForm()">Apply for this job</button>
+
+      <form id="applicationForm">
+        <label for="discordUsername">Discord Username</label>
+        <input
+          type="text"
+          id="discordUsername"
+          name="discordUsername"
+          placeholder="e.g., user#1234"
+          required />
+
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Your email address"
+          required />
+
+        <label for="whyJob">Why do you want the job?</label>
+        <textarea
+          id="whyJob"
+          name="whyJob"
+          placeholder="Explain why you're interested in this position"
+          rows="4"
+          required></textarea>
+
+        <label for="benefit">How can you benefit Reflection?</label>
+        <textarea
+          id="benefit"
+          name="benefit"
+          placeholder="Describe how you can contribute to our organization"
+          rows="4"
+          required></textarea>
+
+        <label for="experience">State your experience below (as a list)</label>
+        <textarea
+          id="experience"
+          name="experience"
+          placeholder="List your relevant experience, each on a new line"
+          rows="6"
+          required></textarea>
+
+        <label for="extraNotes">Any extra notes</label>
+        <textarea
+          id="extraNotes"
+          name="extraNotes"
+          placeholder="Include any additional details or comments"
+          rows="4"></textarea>
+
+        <button type="button" onclick="submitApplication()">Submit</button>
+      </form>
+    </div>
+
+    <script>
+      function toggleForm() {
+        const form = document.getElementById("applicationForm");
+        form.style.display = form.style.display === "flex" ? "none" : "flex";
+      }
+
+      async function submitApplication() {
+        const formData = {
+          discordUsername: document.getElementById("discordUsername").value,
+          email: document.getElementById("email").value,
+          whyJob: document.getElementById("whyJob").value,
+          benefit: document.getElementById("benefit").value,
+          experience: document.getElementById("experience").value,
+          extraNotes: document.getElementById("extraNotes").value,
+        };
+
+        const response = await fetch("/.netlify/functions/submitApplication", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+
+        if (response.ok) {
+          alert("Application submitted successfully!");
+          document.getElementById("applicationForm").reset();
+          document.getElementById("applicationForm").style.display = "none";
+        } else {
+          alert(
+            "There was an issue submitting your application. Please try again."
+          );
+        }
+      }
+    </script>
+  </body>
+</html>
