@@ -10,7 +10,7 @@ exports.handler = async (event) => {
         // Dynamically import 'node-fetch' since it's an ESM module
         const { default: fetch } = await import('node-fetch');
 
-        const { discordUsername, email, whyJob, benefit, experience, extraNotes } =
+        const { discordUsername, email, whyJob, benefit, experience, extraNotes, jobname } =
             JSON.parse(event.body);
 
         const webhookURL = process.env.DISCORD_WEBHOOK_URL;
@@ -21,7 +21,7 @@ exports.handler = async (event) => {
 
         // Embed structure for Discord
         const embed = {
-            title: "New Job Application",
+            title: `${jobname} - New Job Application`, // Use jobname as part of the title
             color: 3447003, // Green color (can be changed to match your theme)
             fields: [
                 {
