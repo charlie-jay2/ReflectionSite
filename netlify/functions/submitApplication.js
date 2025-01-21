@@ -1,5 +1,3 @@
-const fetch = require("node-fetch");
-
 exports.handler = async (event) => {
     if (event.httpMethod !== "POST") {
         return {
@@ -9,6 +7,9 @@ exports.handler = async (event) => {
     }
 
     try {
+        // Dynamically import 'node-fetch' since it's an ESM module
+        const { default: fetch } = await import('node-fetch');
+
         const { discordUsername, email, whyJob, benefit, experience, extraNotes } =
             JSON.parse(event.body);
 
