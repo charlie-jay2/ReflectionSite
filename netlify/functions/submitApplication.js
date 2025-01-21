@@ -1,6 +1,6 @@
-const fetch = require("node-fetch");
+import fetch from "node-fetch";
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
     if (event.httpMethod !== "POST") {
         return {
             statusCode: 405,
@@ -15,7 +15,7 @@ exports.handler = async (event) => {
         const webhookURL = process.env.DISCORD_WEBHOOK_URL;
 
         if (!webhookURL) {
-            throw new Error("Discord webhook URL is not set.");
+            throw new Error("Discord webhook URL is not configured.");
         }
 
         const message = {
@@ -29,7 +29,7 @@ exports.handler = async (event) => {
         });
 
         if (!response.ok) {
-            throw new Error(`Discord webhook error: ${response.statusText}`);
+            throw new Error(`Failed to send webhook: ${response.statusText}`);
         }
 
         return {
@@ -37,7 +37,7 @@ exports.handler = async (event) => {
             body: JSON.stringify({ message: "Application submitted successfully!" }),
         };
     } catch (error) {
-        console.error("Error submitting application:", error);
+        console.error("Error in submitApplication:", error);
         return {
             statusCode: 500,
             body: JSON.stringify({ message: "Internal Server Error", error: error.message }),
