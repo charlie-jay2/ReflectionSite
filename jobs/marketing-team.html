@@ -264,35 +264,43 @@
       }
 
       async function submitApplication() {
-        const formData = {
-          discordUsername: document.getElementById("discordUsername").value,
-          jobname: document.getElementById("jobname").value,
-          email: document.getElementById("email").value,
-          whyJob: document.getElementById("whyJob").value,
-          benefit: document.getElementById("benefit").value,
-          experience: document.getElementById("experience").value,
-          extraNotes: document.getElementById("extraNotes").value,
-        };
+        const formData = new FormData();
+        formData.append(
+          "discordUsername",
+          document.getElementById("discordUsername").value
+        );
+        formData.append("jobname", document.getElementById("jobname").value);
+        formData.append("email", document.getElementById("email").value);
+        formData.append("whyJob", document.getElementById("whyJob").value);
+        formData.append("benefit", document.getElementById("benefit").value);
+        formData.append(
+          "experience",
+          document.getElementById("experience").value
+        );
+        formData.append(
+          "extraNotes",
+          document.getElementById("extraNotes").value
+        );
 
-        const response1 = await fetch("/.netlify/functions/submitApplication", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        });
-
+        // Append the CV file to the FormData object
         const cvFile = document.getElementById("cv").files[0];
         if (!cvFile) {
           alert("Please upload a valid CV file.");
           return;
         }
 
-        const formDataForCV = new FormData();
-        formDataForCV.append("cv", cvFile);
+        formData.append("cv", cvFile);
 
+        // Send form data to submitApplication
+        const response1 = await fetch("/.netlify/functions/submitApplication", {
+          method: "POST",
+          body: formData,
+        });
+
+        // Send the same form data (including CV) to cvsend
         const response2 = await fetch("/.netlify/functions/cvsend", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: formDataForCV,
+          body: formData, // Same form data is being sent, including file
         });
 
         if (response1.ok && response2.ok) {
