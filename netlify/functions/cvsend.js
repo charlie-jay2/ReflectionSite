@@ -1,6 +1,7 @@
-const multiparty = require('multiparty');
+const formidable = require('formidable');
 const { fetch } = require('undici');
 const fs = require('fs');
+const { Readable } = require('stream'); // Use Readable stream for file transfer
 
 exports.handler = async (event) => {
     if (event.httpMethod !== "POST") {
@@ -11,10 +12,8 @@ exports.handler = async (event) => {
     }
 
     try {
-        // Create a multiparty form object to parse the incoming form-data
-        const form = new multiparty.Form();
-
-        // Return a Promise that parses the request
+        // Use formidable to parse incoming form data
+        const form = new formidable.IncomingForm();
         const data = await new Promise((resolve, reject) => {
             form.parse(event, (err, fields, files) => {
                 if (err) {
@@ -25,22 +24,22 @@ exports.handler = async (event) => {
             });
         });
 
-        // Extract the uploaded file
+        // Extract file (CV)
         const file = data.files.cv ? data.files.cv[0] : null;
 
         if (!file) {
             throw new Error("No file found in the request.");
         }
 
-        // Validate the file type (only .pdf or .docx)
+        // Validate file type (PDF or DOCX)
         const validTypes = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
         if (!validTypes.includes(file.headers['content-type'])) {
             throw new Error("Invalid file type. Only PDF and DOCX are allowed.");
         }
 
-        // Create a FormData object to send the file to Discord
+        // Send file to Discord webhook
         const formData = new FormData();
-        formData.append("file", fs.createReadStream(file.path), file.originalFilename);
+        formData.append("file", fs.createReadStream(file.filepath), file.originalFilename);
 
         const webhookURL = process.env.DISCORD_WEBHOOK_URL;
 
@@ -48,7 +47,7 @@ exports.handler = async (event) => {
             throw new Error("Discord webhook URL is not configured.");
         }
 
-        // Send the file to Discord
+        // Send the file as form data to the Discord webhook
         const response = await fetch(webhookURL, {
             method: "POST",
             headers: formData.getHeaders(),
