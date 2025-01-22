@@ -2,6 +2,7 @@
   "dependencies": {
     "formdata-node": "^6.0.3",
     "formidable": "^3.5.2",
+    "multiparty": "^4.2.3",
     "netlify": "^13.3.2",
     "node-fetch": "^2.7.0",
     "stream": "^0.0.3",
