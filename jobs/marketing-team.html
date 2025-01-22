@@ -95,6 +95,24 @@
       textarea {
         resize: vertical;
       }
+      /* Confirmation splash screen */
+      #confirmationSplash {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        text-align: center;
+        padding: 20px;
+        z-index: 9999;
+      }
+      #confirmationSplash h2 {
+        font-size: 30px;
+        margin: 20px 0;
+      }
     </style>
   </head>
   <body>
@@ -228,16 +246,14 @@
           placeholder="Include any additional details or comments"
           rows="4"></textarea>
 
-        <label for="cv">Upload CV</label>
-        <input
-          type="file"
-          id="cv"
-          name="cv"
-          accept=".pdf,.doc,.docx"
-          required />
-
         <button type="button" onclick="submitApplication()">Submit</button>
       </form>
+
+      <!-- Confirmation splash screen -->
+      <div id="confirmationSplash">
+        <h2>Thank you for applying!</h2>
+        <p>Your application has been submitted successfully.</p>
+      </div>
     </div>
 
     <script>
@@ -262,19 +278,24 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
-      }
 
-      const response2 = await fetch("/.netlify/functions/cvsend", {
-          method: "POST",
-          body: formData,
-        });
+        if (response1.ok) {
+          // Show confirmation splash
+          document.getElementById("confirmationSplash").style.display = "block";
 
-        if (response.ok) {
-          alert("Application submitted successfully!");
-          form.reset();
+          // Hide the form
+          document.getElementById("applicationForm").style.display = "none";
+
+          // After 10 seconds, redirect to vacancies page
+          setTimeout(function () {
+            window.location.href = "https://vacancies.realreflection.co.uk";
+          }, 10000);
         } else {
-          alert("There was an issue submitting your application. Please try again.");
+          alert(
+            "There was an issue submitting your application. Please try again."
+          );
         }
+      }
     </script>
   </body>
 </html>
