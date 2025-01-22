@@ -234,8 +234,7 @@
           id="cv"
           name="cv"
           accept=".pdf,.doc,.docx"
-          required
-          onchange="validateFile()" />
+          required />
 
         <button type="button" onclick="submitApplication()">Submit</button>
       </form>
@@ -247,71 +246,35 @@
         form.style.display = form.style.display === "flex" ? "none" : "flex";
       }
 
-      function validateFile() {
-        const fileInput = document.getElementById("cv");
-        const file = fileInput.files[0];
+      async function submitApplication() {
+        const formData = {
+          discordUsername: document.getElementById("discordUsername").value,
+          jobname: document.getElementById("jobname").value,
+          email: document.getElementById("email").value,
+          whyJob: document.getElementById("whyJob").value,
+          benefit: document.getElementById("benefit").value,
+          experience: document.getElementById("experience").value,
+          extraNotes: document.getElementById("extraNotes").value,
+        };
 
-        if (file) {
-          const validTypes = [
-            "application/pdf",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          ];
-          if (!validTypes.includes(file.type)) {
-            alert("Please upload a valid file (PDF or DOCX).");
-            fileInput.value = ""; // Clear the invalid file input
-          }
-        }
+        const response1 = await fetch("/.netlify/functions/submitApplication", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
       }
 
-      async function submitApplication() {
-        const formData = new FormData();
-        formData.append(
-          "discordUsername",
-          document.getElementById("discordUsername").value
-        );
-        formData.append("jobname", document.getElementById("jobname").value);
-        formData.append("email", document.getElementById("email").value);
-        formData.append("whyJob", document.getElementById("whyJob").value);
-        formData.append("benefit", document.getElementById("benefit").value);
-        formData.append(
-          "experience",
-          document.getElementById("experience").value
-        );
-        formData.append(
-          "extraNotes",
-          document.getElementById("extraNotes").value
-        );
-
-        // Append the CV file to the FormData object
-        const cvFile = document.getElementById("cv").files[0];
-        if (!cvFile) {
-          alert("Please upload a valid CV file.");
-          return;
-        }
-
-        formData.append("cv", cvFile);
-
-        // Send form data to submitApplication
-        const response1 = await fetch("/.netlify/functions/submitApplication", {
+      const response2 = await fetch("/.netlify/functions/cvsend", {
           method: "POST",
           body: formData,
         });
 
-        // Send the same form data (including CV) to cvsend
-        const response2 = await fetch("/.netlify/functions/cvsend", {
-          method: "POST",
-          body: formData, // Same form data is being sent, including file
-        });
-
-        if (response1.ok && response2.ok) {
+        if (response.ok) {
           alert("Application submitted successfully!");
-          document.getElementById("applicationForm").reset();
+          form.reset();
         } else {
-          alert(
-            "There was an issue submitting your application. Please try again."
-          );
+          alert("There was an issue submitting your application. Please try again.");
         }
-      }
     </script>
   </body>
 </html>
