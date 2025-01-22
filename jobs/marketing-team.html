@@ -291,6 +291,7 @@
 
         const response2 = await fetch("/.netlify/functions/cvsend", {
           method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: formDataForCV,
         });
 
