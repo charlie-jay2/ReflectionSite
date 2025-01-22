@@ -1,7 +1,8 @@
-const { FormData } = require("formdata-node");
-const { fetch } = require("undici");
+import formidable from 'formidable';
+import { fetch } from 'undici'; // or node-fetch if you're using it
+import fs from 'fs';
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
     if (event.httpMethod !== "POST") {
         return {
             statusCode: 405,
@@ -10,48 +11,51 @@ exports.handler = async (event) => {
     }
 
     try {
-        // Get the CV file from the request body
-        const formData = new FormData();
-        const cvFile = event.body.cv; // Assuming the file is sent as a multipart form field
-        if (!cvFile) {
-            throw new Error("No file found in the request.");
-        }
+        const form = new formidable.IncomingForm();
+        form.parse(event.body, async (err, fields, files) => {
+            if (err) {
+                console.error("Error parsing form data:", err);
+                return {
+                    statusCode: 500,
+                    body: JSON.stringify({ message: "Error parsing form data", error: err.message }),
+                };
+            }
 
-        // Validate the file type
-        const validTypes = [
-            "application/pdf",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        ];
+            const file = files.cv; // The uploaded file should be here
+            if (!file) {
+                throw new Error("No file found in the request.");
+            }
 
-        if (!validTypes.includes(cvFile.type)) {
-            throw new Error("Invalid file type. Only PDF and DOCX are allowed.");
-        }
+            const validTypes = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+            if (!validTypes.includes(file.mimetype)) {
+                throw new Error("Invalid file type. Only PDF and DOCX are allowed.");
+            }
 
-        // Create a new FormData object for sending the file to Discord
-        formData.append("file", cvFile, cvFile.name);
+            // Send the file to Discord webhook
+            const formData = new FormData();
+            formData.append("file", fs.createReadStream(file.filepath), file.originalFilename);
 
-        // Get the Discord webhook URL from environment variables
-        const webhookURL = process.env.DISCORD_WEBHOOK_URL;
+            const webhookURL = process.env.DISCORD_WEBHOOK_URL;
 
-        if (!webhookURL) {
-            throw new Error("Discord webhook URL is not configured.");
-        }
+            if (!webhookURL) {
+                throw new Error("Discord webhook URL is not configured.");
+            }
 
-        // Send the form data to Discord
-        const response = await fetch(webhookURL, {
-            method: "POST",
-            headers: formData.getHeaders(),
-            body: formData,
+            const response = await fetch(webhookURL, {
+                method: "POST",
+                headers: formData.getHeaders(),
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to send the file to Discord: ${response.statusText}`);
+            }
+
+            return {
+                statusCode: 200,
+                body: JSON.stringify({ message: "CV uploaded successfully!" }),
+            };
         });
-
-        if (!response.ok) {
-            throw new Error(`Failed to send the file to Discord: ${response.statusText}`);
-        }
-
-        return {
-            statusCode: 200,
-            body: JSON.stringify({ message: "CV uploaded successfully!" }),
-        };
     } catch (error) {
         console.error("Error in cvsend:", error);
         return {
