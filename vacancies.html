@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Careers at Our Organization</title>
+    <title>Careers at Reflection</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -59,16 +59,20 @@
         text-decoration: underline;
         color: black;
       }
+      /* Hidden by default */
+      .hidden {
+        display: none;
+      }
     </style>
   </head>
   <body>
     <header>
-      <h1>Careers at Our Organization</h1>
+      <h1>Careers at Reflection</h1>
     </header>
 
     <div class="container">
       <div class="section-title">Current Opportunities</div>
-      <div class="job-listing">
+      <div class="job-listing" id="marketingJob">
         <h2>Marketing Team</h2>
         <p>
           The Marketing Team for our Discord bot is responsible for ensuring the
@@ -84,5 +88,24 @@
         <h2>New vacancies will be listed here.</h2>
       </div>
     </div>
+
+    <script>
+      // Define the end date and time for the Marketing Team job application
+      const endDate = new Date("2025-02-22T11:00:00Z"); // UTC time (11:00 AM on 22nd Feb 2025)
+
+      // Get the current date and time
+      const currentDate = new Date();
+
+      // Convert the end date to UK time (UTC+0 for simplicity in this example)
+      const ukTime = new Date(
+        currentDate.toLocaleString("en-GB", { timeZone: "Europe/London" })
+      );
+
+      // Check if the current date and time is past the end date
+      if (ukTime >= endDate) {
+        // Hide the Marketing Team job listing
+        document.getElementById("marketingJob").classList.add("hidden");
+      }
+    </script>
   </body>
 </html>
