@@ -1,8 +1,8 @@
-import formidable from 'formidable';
-import { fetch } from 'undici'; // or node-fetch if you're using it
-import fs from 'fs';
+const formidable = require('formidable');
+const { fetch } = require('undici');
+const fs = require('fs');
 
-export const handler = async (event) => {
+exports.handler = async (event) => {
     if (event.httpMethod !== "POST") {
         return {
             statusCode: 405,
@@ -11,7 +11,7 @@ export const handler = async (event) => {
     }
 
     try {
-        const form = new formidable.IncomingForm();
+        const form = new formidable.IncomingForm(); // Use the correct import method
         form.parse(event.body, async (err, fields, files) => {
             if (err) {
                 console.error("Error parsing form data:", err);
