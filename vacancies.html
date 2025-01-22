@@ -9,10 +9,11 @@
         font-family: Arial, sans-serif;
         margin: 0;
         padding: 0;
-        background-color: #f4f4f9;
+        background: linear-gradient(to bottom, #794d11, black 70%);
+        background-size: 100% 100%;
+        background-attachment: fixed;
       }
       header {
-        background: linear-gradient(to right, #794d11, black 40%);
         color: white;
         text-align: center;
         padding: 20px 0;
@@ -72,7 +73,7 @@
 
     <div class="container">
       <div class="section-title">Current Opportunities</div>
-      <div class="job-listing" id="marketingJob">
+      <div class="job-listing" id="marketingjob">
         <h2>Marketing Team</h2>
         <p>
           The Marketing Team for our Discord bot is responsible for ensuring the
@@ -90,22 +91,35 @@
     </div>
 
     <script>
-      // Define the end date and time for the Marketing Team job application
-      const endDate = new Date("2025-02-22T11:00:00Z"); // UTC time (11:00 AM on 22nd Feb 2025)
+      // Define the end date and time in the format Day-Month-Year Hour-Minute-Second (e.g., 22-02-2025 11:00:00)
+      const endDateStr = "17-02-2025 08:00:00";
 
-      // Get the current date and time
-      const currentDate = new Date();
+      // Parse the date manually
+      const parts = endDateStr.split(" ");
+      const dateParts = parts[0].split("-");
+      const timeParts = parts[1].split(":");
 
-      // Convert the end date to UK time (UTC+0 for simplicity in this example)
-      const ukTime = new Date(
-        currentDate.toLocaleString("en-GB", { timeZone: "Europe/London" })
+      // Create a new Date object with the parsed parts
+      const endDate = new Date(
+        `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}T${timeParts[0]}:${timeParts[1]}:${timeParts[2]}Z`
       );
 
-      // Check if the current date and time is past the end date
-      if (ukTime >= endDate) {
-        // Hide the Marketing Team job listing
-        document.getElementById("marketingJob").classList.add("hidden");
+      // Function to check the current date and hide the job if the end date is reached
+      function checkJobStatus() {
+        const currentDate = new Date();
+
+        // Check if the current date is past the end date
+        if (currentDate >= endDate) {
+          // Hide the Marketing Team job listing
+          document.getElementById("marketingjob").classList.add("hidden");
+        }
       }
+
+      // Call the checkJobStatus function immediately on load
+      checkJobStatus();
+
+      // Set an interval to check the job status every 10 seconds
+      setInterval(checkJobStatus, 10000);
     </script>
   </body>
 </html>
