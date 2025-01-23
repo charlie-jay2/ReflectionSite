@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Open Graph Meta Tags for richer social media previews -->
+    <meta property="og:title" content="Reflection Bot" />
+    <meta
+      property="og:description"
+      content="Reflection Bot by Flexa Group, Under Construction." />
+    <meta
+      property="og:image"
+      content="https://www.flexagroup.co.uk/assets/logo.png" />
+    <meta property="og:url" content="https://flexagroup.co.uk" />
+    <meta property="og:type" content="website" />
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:title" content="Reflection Bot" />
+    <meta
+      name="twitter:description"
+      content="Reflection Bot by Flexa Group, Under Construction." />
+    <meta
+      name="twitter:image"
+      content="https://www.flexagroup.co.uk/assets/logo.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="assets/logo-favicon.png" type="image/png" />
+
+    <!-- Link to external stylesheet -->
+    <link rel="stylesheet" href="styles.css" />
+    <title>Reflection Bot</title>
+
+    <style>
+      /* Base Styles */
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background: url("assets/Site Background.png") no-repeat center center
+          fixed;
+        background-size: cover;
+        overflow-x: hidden;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      /* Mobile Message Container */
+      .mobile-message-container {
+        display: none; /* Hidden by default */
+        text-align: center;
+        color: white;
+        font-size: 1.5rem;
+        background: black;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px; /* Space between lines */
+      }
+
+      .mobile-link a {
+        color: #ffcc00;
+        text-decoration: underline;
+      }
+
+      /* Desktop Styles */
+      @media screen and (min-width: 769px) {
+        .mobile-message-container {
+          display: none; /* Hide on desktop */
+        }
+      }
+
+      /* Mobile Styles */
+      @media screen and (max-width: 768px) {
+        body {
+          background: none; /* Remove background image */
+          background-color: black; /* Set a solid black background */
+        }
+
+        .textbox-container,
+        .button-container,
+        audio {
+          display: none; /* Hide all content */
+        }
+
+        .mobile-message-container {
+          display: flex; /* Show mobile message container */
+        }
+
+        .textboxbutton {
+          opacity: 1;
+          transform: scale(3);
+          margin-left: 15vh;
+          top: 60%;
+        }
+
+        .textboxbutton:hover {
+          opacity: 1;
+          transform: scale(3.2);
+          margin-left: 15vh;
+          top: 60%;
+        }
+
+        .video {
+          opacity: 0;
+        }
+      }
+
+      /* Popup styles */
+      .popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        display: none;
+      }
+
+      .popup button {
+        background-image: linear-gradient(to bottom, #794d11, black 40%);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin: 10px;
+        cursor: pointer;
+        font-size: 1rem;
+        border-radius: 5px;
+      }
+
+      .popup button:hover {
+        background-color: #e6b800;
+      }
+
+      /* Hide iframe controls */
+      iframe {
+        width: 35%;
+        height: 60%;
+        border: none;
+        display: block;
+        position: absolute;
+        top: 50%;
+        left: 52%;
+        transform: translate(-50%, -50%);
+        clip-path: inset(20% 0 0 0); /* Crop the top by 20% */
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Desktop Content -->
+    <div class="textbox-container">
+      <img
+        src="./assets/text/textbox.png"
+        class="textbox"
+        draggable="false"
+        id="textbox" />
+    </div>
+
+    <div class="button-container">
+      <img
+        src="./assets/Buttons/ADD REFLECTION TO YOUR SERVER.png"
+        class="button1"
+        draggable="false" />
+      <a
+        href="https://mail.google.com/mail/?view=cm&fs=1&to=flexagroupofficial@gmail.com"
+        target="_blank"
+        ><img
+          src="./assets/Buttons/GET IN TOUCH.png"
+          class="button2"
+          draggable="false"
+      /></a>
+      <a href="https://discord.gg/5jkuhd79QV" target="_blank"
+        ><img
+          src="./assets/Buttons/JOIN THE OFFICIAL COMMUNITY.png"
+          class="button3"
+          draggable="false"
+      /></a>
+    </div>
+
+    <!-- Mobile Message -->
+    <div class="mobile-message-container">
+      <div>This site is unavailable for mobile.</div>
+      <div>Add the bot here -- Unavailable</div>
+      <div>
+        Join the Discord
+        <a href="https://discord.gg/5jkuhd79QV">here</a>
+      </div>
+    </div>
+
+    <!-- Video Embed (Iframe) -->
+    <div>
+      <iframe
+        src="https://www.dropbox.com/scl/fi/p2nlxbl93jc3otb60xw0y/vidcard-3.mp4?rlkey=aeumwbegguoxbhdtn5ehg5kps&st=c1vducua&raw=1"
+        class="video"
+        id="videotag"
+        allow="autoplay; fullscreen"></iframe>
+    </div>
+
+    <!-- Popup for audio selection -->
+    <div id="popup" class="popup">
+      <div>Do you wish to play the transcript?</div>
+      <button id="playBtn">PLAY</button>
+      <button id="stopBtn">STOP</button>
+    </div>
+
+    <script>
+      // Declare audio variables outside of the playAudioSequence function
+      const firstAudio = new Audio("./assets/Audio/First - Style.wav");
+      const secondAudio = new Audio("./assets/Audio/2nd - Paragraph.wav");
+      const thirdAudio = new Audio("./assets/Audio/3rd - 2025.wav");
+      const finalAudio = new Audio("./assets/induction.wav");
+
+      // Get elements
+      const textbox = document.getElementById("textbox");
+      const popup = document.getElementById("popup");
+      const playBtn = document.getElementById("playBtn");
+      const stopBtn = document.getElementById("stopBtn");
+
+      // Function to play the audio sequence
+      const playAudioSequence = () => {
+        // Play the first audio
+        firstAudio.play();
+
+        firstAudio.onended = () => {
+          setTimeout(() => {
+            secondAudio.play();
+            secondAudio.onended = () => {
+              setTimeout(() => {
+                thirdAudio.play();
+                thirdAudio.onended = () => {
+                  setTimeout(() => {
+                    finalAudio.play();
+                  }, 1000); // Wait 1 second before playing the final audio
+                };
+              }, 1500); // Wait 1.5 seconds before playing the third audio
+            };
+          }, 1500); // Wait 1.5 seconds before playing the second audio
+        };
+      };
+
+      // Show the popup when the textbox is clicked
+      textbox.onclick = () => {
+        popup.style.display = "block";
+      };
+
+      // Play audio when the play button is clicked
+      playBtn.onclick = () => {
+        playAudioSequence();
+        popup.style.display = "none"; // Hide popup after play
+      };
+
+      // Stop the audio when the stop button is clicked
+      stopBtn.onclick = () => {
+        const allAudios = [firstAudio, secondAudio, thirdAudio, finalAudio];
+        allAudios.forEach((audio) => audio.pause());
+        allAudios.forEach((audio) => (audio.currentTime = 0));
+        popup.style.display = "none"; // Hide popup on stop
+      };
+    </script>
+  </body>
+</html>

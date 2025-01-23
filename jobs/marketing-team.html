@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Marketing Team</title>
+    <script
+      src="https://kit.fontawesome.com/a076d05399.js"
+      crossorigin="anonymous"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(to bottom, #794d11, black 70%);
+        background-size: 100% 100%;
+        background-attachment: fixed;
+      }
+      .container {
+        max-width: 900px;
+        margin: 30px auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        font-size: 28px;
+        margin-bottom: 20px;
+        color: #333;
+      }
+      .section {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+      .section i {
+        font-size: 20px;
+        color: #5cb85c;
+        margin-right: 10px;
+      }
+      .section-content {
+        flex: 1;
+      }
+      .section-content h2 {
+        font-size: 18px;
+        margin: 0;
+        color: #333;
+      }
+      .section-content p {
+        margin: 5px 0;
+        font-size: 16px;
+        color: #666;
+      }
+      ul {
+        margin: 0;
+        padding-left: 20px;
+        font-size: 16px;
+        color: #666;
+      }
+      ul li {
+        margin-bottom: 8px;
+      }
+      button {
+        background-color: #794d11;
+        color: black;
+        border: none;
+        padding: 10px 20px;
+        font-size: 18px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: 0.5s ease-in-out;
+      }
+      button:hover {
+        background-color: black;
+        color: white;
+      }
+      #applicationForm {
+        display: none;
+        margin-top: 20px;
+        flex-direction: column;
+      }
+      label {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      input,
+      textarea {
+        margin-bottom: 15px;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        width: 100%;
+      }
+      textarea {
+        resize: vertical;
+      }
+      /* Confirmation splash screen */
+      #confirmationSplash {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        text-align: center;
+        padding: 20px;
+        z-index: 9999;
+      }
+      #confirmationSplash h2 {
+        font-size: 30px;
+        margin: 20px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Marketing Team</h1>
+
+      <div class="section">
+        <i class="fas fa-dollar-sign"></i>
+        <div class="section-content">
+          <h2>Pay Rate:</h2>
+          <p>A 5% of our income.</p>
+        </div>
+      </div>
+      <div class="section">
+        <i class="fas fa-map-marker-alt"></i>
+        <div class="section-content">
+          <h2>Location:</h2>
+          <p>Remote</p>
+        </div>
+      </div>
+      <div class="section">
+        <i class="fas fa-clipboard-list"></i>
+        <div class="section-content">
+          <h2>Description:</h2>
+          <p>
+            As a member of the Marketing Team, you will play a key role in
+            building and expanding the reach of our Discord bot. This role
+            focuses on creating and executing marketing strategies to enhance
+            user engagement, visibility, and retention. You will work closely
+            with other team members to craft compelling campaigns, connect with
+            the community, and ensure the bot meets its full potential. The
+            Marketing Team is the creative engine behind all promotional
+            efforts, responsible for showcasing the bot's features, building
+            partnerships, and driving brand awareness. By analyzing user
+            feedback and trends, you will help shape the future direction of our
+            bot's outreach initiatives.
+          </p>
+        </div>
+      </div>
+      <div class="section">
+        <i class="fas fa-tasks"></i>
+        <div class="section-content">
+          <h2>Responsibilities:</h2>
+          <ul>
+            <li>
+              Develop and execute marketing strategies to promote the bot.
+            </li>
+            <li>
+              Create engaging content, including announcements and promotional
+              posts.
+            </li>
+            <li>
+              Manage and grow the bot's social media presence and partnerships.
+            </li>
+            <li>
+              Analyze user feedback and data to optimize marketing campaigns.
+            </li>
+            <li>
+              Collaborate with the development team to highlight new features
+              and updates.
+            </li>
+            <li>
+              Engage with communities to build a strong presence and brand
+              loyalty.
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="section">
+        <i class="fas fa-clock"></i>
+        <div class="section-content">
+          <h2>Hours:</h2>
+          <p>N/A</p>
+          <h2>Application Deadline</h2>
+          <p>17th of Feburary 2025 at 8AM</p>
+        </div>
+      </div>
+
+      <button onclick="toggleForm()">Apply for this job</button>
+
+      <form id="applicationForm">
+        <!-- Hidden input for job name -->
+        <input
+          type="hidden"
+          id="jobname"
+          name="jobname"
+          value="Marketing Team" />
+
+        <label for="discordUsername">Discord Username</label>
+        <input
+          type="text"
+          id="discordUsername"
+          name="discordUsername"
+          placeholder="e.g., user#1234"
+          required />
+
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Your email address"
+          required />
+
+        <label for="whyJob">Why do you want the job?</label>
+        <textarea
+          id="whyJob"
+          name="whyJob"
+          placeholder="Explain why you're interested in this position"
+          rows="4"
+          required></textarea>
+
+        <label for="benefit">How can you benefit Reflection?</label>
+        <textarea
+          id="benefit"
+          name="benefit"
+          placeholder="Describe how you can contribute to our organization"
+          rows="4"
+          required></textarea>
+
+        <label for="experience">State your experience below (as a list)</label>
+        <textarea
+          id="experience"
+          name="experience"
+          placeholder="List your relevant experience, each on a new line"
+          rows="6"
+          required></textarea>
+
+        <label for="extraNotes">Any extra notes</label>
+        <textarea
+          id="extraNotes"
+          name="extraNotes"
+          placeholder="Include any additional details or comments"
+          rows="4"></textarea>
+
+        <button type="button" onclick="submitApplication()">Submit</button>
+      </form>
+
+      <!-- Confirmation splash screen -->
+      <div id="confirmationSplash">
+        <h2>Thank you for applying!</h2>
+        <p>Your application has been submitted successfully.</p>
+      </div>
+    </div>
+
+    <script>
+      function toggleForm() {
+        const form = document.getElementById("applicationForm");
+        form.style.display = form.style.display === "flex" ? "none" : "flex";
+      }
+
+      async function submitApplication() {
+        const formData = {
+          discordUsername: document.getElementById("discordUsername").value,
+          jobname: document.getElementById("jobname").value,
+          email: document.getElementById("email").value,
+          whyJob: document.getElementById("whyJob").value,
+          benefit: document.getElementById("benefit").value,
+          experience: document.getElementById("experience").value,
+          extraNotes: document.getElementById("extraNotes").value,
+        };
+
+        const response1 = await fetch("/.netlify/functions/submitApplication", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+
+        if (response1.ok) {
+          // Save the application to MongoDB using the applicationsave function
+          const response2 = await applicationSave(formData);
+
+          if (response2) {
+            // Show confirmation splash
+            document.getElementById("confirmationSplash").style.display =
+              "block";
+
+            // Hide the form
+            document.getElementById("applicationForm").style.display = "none";
+
+            // After 4 seconds, redirect to vacancies page
+            setTimeout(function () {
+              window.location.href = "https://vacancies.realreflection.co.uk";
+            }, 4000);
+          } else {
+            alert(
+              "Your application was submitted but could not be saved. Please contact support."
+            );
+          }
+        } else {
+          alert(
+            "There was an issue submitting your application. Please try again."
+          );
+        }
+      }
+
+      async function applicationSave(formData) {
+        try {
+          const response = await fetch("/.netlify/functions/applicationsave", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+          });
+
+          if (response.ok) {
+            return true;
+          } else {
+            console.error("Failed to save application:", await response.text());
+            return false;
+          }
+        } catch (error) {
+          console.error("Error saving application:", error);
+          return false;
+        }
+      }
+    </script>
+  </body>
+</html>
