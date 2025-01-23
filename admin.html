@@ -98,23 +98,39 @@
       </tbody>
     </table>
     <script>
-      // Check session on load
-      window.onload = () => {
+      async function validateSession() {
         const sessionToken = localStorage.getItem("sessionToken");
-        const sessionExpiration = localStorage.getItem("sessionExpiration");
 
-        if (
-          !sessionToken ||
-          !sessionExpiration ||
-          new Date().getTime() > sessionExpiration
-        ) {
-          // Redirect to login if no valid session
+        if (!sessionToken) {
           alert("Session expired. Please log in again.");
           localStorage.removeItem("sessionToken");
-          localStorage.removeItem("sessionExpiration");
+          window.location.href = "index.html";
+          return;
+        }
+
+        try {
+          const response = await fetch("/.netlify/functions/validatesession", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ sessionToken }),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            alert(data.message || "Session expired. Please log in again.");
+            localStorage.removeItem("sessionToken");
+            window.location.href = "login.html";
+          }
+        } catch (error) {
+          console.error("Error validating session:", error);
+          alert("An error occurred. Please log in again.");
+          localStorage.removeItem("sessionToken");
           window.location.href = "login.html";
         }
-      };
+      }
+
+      window.onload = validateSession;
     </script>
     <script>
       async function fetchApplications() {
