@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin - View Applications</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+      }
+      h1 {
+        text-align: center;
+        color: #333;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+      }
+      th {
+        background-color: #794d11;
+        color: white;
+      }
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Applications</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Discord Username</th>
+          <th>Email</th>
+          <th>Why Job</th>
+          <th>Benefit</th>
+          <th>Experience</th>
+          <th>Extra Notes</th>
+        </tr>
+      </thead>
+      <tbody id="applicationTableBody">
+        <!-- Rows will be dynamically added here -->
+      </tbody>
+    </table>
+
+    <script>
+      async function fetchApplications() {
+        const response = await fetch("/.netlify/functions/getapplications");
+        if (response.ok) {
+          const data = await response.json();
+          const tableBody = document.getElementById("applicationTableBody");
+
+          data.forEach((app) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+            <td>${app.discordUsername}</td>
+            <td>${app.email}</td>
+            <td>${app.whyJob}</td>
+            <td>${app.benefit}</td>
+            <td>${app.experience.replace(/\n/g, "<br>")}</td>
+            <td>${app.extraNotes || "N/A"}</td>
+          `;
+            tableBody.appendChild(row);
+          });
+        } else {
+          alert("Failed to fetch applications");
+        }
+      }
+
+      fetchApplications();
+    </script>
+  </body>
+</html>
