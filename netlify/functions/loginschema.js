@@ -16,7 +16,7 @@ exports.handler = async (event) => {
 
         await client.connect();
         const database = client.db("applicationsDB"); // Replace with your database name
-        const collection = database.collection("logins");
+        const collection = database.collection("logins"); // Replace with your collection name
 
         // Find user with matching username and password
         const user = await collection.findOne({ username, password });
@@ -28,18 +28,12 @@ exports.handler = async (event) => {
             };
         }
 
-        // Call the session creation function
-        const sessionResponse = await fetch("/.netlify/functions/sessionschema", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username }),
-        });
-
-        const sessionData = await sessionResponse.json();
+        // Generate a session token
+        const sessionToken = Buffer.from(`${username}:${Date.now()}`).toString("base64");
 
         return {
-            statusCode: sessionResponse.status,
-            body: JSON.stringify(sessionData),
+            statusCode: 200,
+            body: JSON.stringify({ message: "Login successful", sessionToken }),
         };
     } catch (error) {
         console.error(error);
