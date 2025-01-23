@@ -139,29 +139,29 @@
           applications.forEach((app) => {
             const row = document.createElement("tr");
             row.innerHTML = `
-                <td>${app.discordUsername}</td>
-                <td>${app.email}</td>
-                <td>
-                  <select class="status-select" onchange="updateStatus('${
-                    app._id
-                  }', this.value)">
-                    <option value="PENDING" ${
-                      app.status === "PENDING" ? "selected" : ""
-                    }>PENDING</option>
-                    <option value="ACCEPTED" ${
-                      app.status === "ACCEPTED" ? "selected" : ""
-                    }>ACCEPTED</option>
-                    <option value="REJECTED" ${
-                      app.status === "REJECTED" ? "selected" : ""
-                    }>REJECTED</option>
-                  </select>
-                </td>
-                <td>
-                  <button class="view-btn" onclick="viewApplication(${JSON.stringify(
-                    app
-                  )})">View</button>
-                </td>
-              `;
+              <td>${app.discordUsername}</td>
+              <td>${app.email}</td>
+              <td>
+                <select class="status-select" onchange="updateStatus('${
+                  app._id
+                }', this.value)">
+                  <option value="PENDING" ${
+                    app.status === "PENDING" ? "selected" : ""
+                  }>PENDING</option>
+                  <option value="ACCEPTED" ${
+                    app.status === "ACCEPTED" ? "selected" : ""
+                  }>ACCEPTED</option>
+                  <option value="REJECTED" ${
+                    app.status === "REJECTED" ? "selected" : ""
+                  }>REJECTED</option>
+                </select>
+              </td>
+              <td>
+                <button class="view-btn" onclick="viewApplication(${JSON.stringify(
+                  app
+                )})">View</button>
+              </td>
+            `;
             tableBody.appendChild(row);
           });
         } else {
@@ -177,15 +177,15 @@
 
         // Update the modal body to display all application details
         modalBody.innerHTML = `
-            <p><strong>Email:</strong> ${app.email}</p>
-            <p><strong>Why Job:</strong><br>${app.whyJob}</p>
-            <p><strong>Benefit:</strong><br>${app.benefit}</p>
-            <p><strong>Experience:</strong><br>${app.experience.replace(
-              /\n/g,
-              "<br>"
-            )}</p>
-            <p><strong>Extra Notes:</strong><br>${app.extraNotes || "N/A"}</p>
-          `;
+          <p><strong>Email:</strong> ${app.email}</p>
+          <p><strong>Why Job:</strong><br>${app.whyJob}</p>
+          <p><strong>Benefit:</strong><br>${app.benefit}</p>
+          <p><strong>Experience:</strong><br>${app.experience.replace(
+            /\n/g,
+            "<br>"
+          )}</p>
+          <p><strong>Extra Notes:</strong><br>${app.extraNotes || "N/A"}</p>
+        `;
 
         // Show the modal
         modal.style.display = "flex";
