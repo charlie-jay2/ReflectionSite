@@ -82,17 +82,12 @@
       </tbody>
     </table>
 
-    <div id="applicationDetailsContainer"></div>
-
     <script>
       async function fetchApplications() {
         const response = await fetch("/.netlify/functions/getapplications");
         if (response.ok) {
           const applications = await response.json();
           const tableBody = document.getElementById("applicationTableBody");
-          const detailsContainer = document.getElementById(
-            "applicationDetailsContainer"
-          );
 
           applications.forEach((app) => {
             const row = document.createElement("tr");
@@ -118,13 +113,18 @@
                 <button class="delete-btn" onclick="deleteApplication('${
                   app._id
                 }')">Delete</button>
+                <button class="view-btn" onclick="toggleView('${
+                  app._id
+                }')">View</button>
               </td>
             `;
             tableBody.appendChild(row);
 
-            // Display application details below the table
+            // Create a div for application details but keep it hidden initially
             const detailsDiv = document.createElement("div");
             detailsDiv.classList.add("application-details");
+            detailsDiv.id = `details-${app._id}`;
+            detailsDiv.style.display = "none"; // Initially hidden
             detailsDiv.innerHTML = `
               <h3>Application from ${app.discordUsername}</h3>
               <p><strong>Email:</strong> ${app.email}</p>
@@ -136,7 +136,7 @@
               )}</p>
               <p><strong>Extra Notes:</strong><br>${app.extraNotes || "N/A"}</p>
             `;
-            detailsContainer.appendChild(detailsDiv);
+            tableBody.appendChild(detailsDiv);
           });
         } else {
           alert("Failed to fetch applications");
@@ -186,6 +186,16 @@
           } catch (error) {
             console.error("Error deleting application:", error);
           }
+        }
+      }
+
+      function toggleView(appId) {
+        const detailsDiv = document.getElementById(`details-${appId}`);
+        // Toggle the visibility of the details div
+        if (detailsDiv.style.display === "none") {
+          detailsDiv.style.display = "block";
+        } else {
+          detailsDiv.style.display = "none";
         }
       }
 
