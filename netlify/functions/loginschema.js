@@ -15,7 +15,7 @@ exports.handler = async (event) => {
         const { username, password } = JSON.parse(event.body);
 
         await client.connect();
-        const database = client.db("aplicationsDB"); // Replace with your database name
+        const database = client.db("applicationsDB"); // Replace with your database name
         const collection = database.collection("logins");
 
         // Find user with matching username and password
