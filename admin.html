@@ -119,7 +119,7 @@
       const modalBody = document.getElementById("modalBody");
 
       async function fetchApplications() {
-        const response = await fetch("/.netlify/functions/getApplications");
+        const response = await fetch("/.netlify/functions/getapplications");
         if (response.ok) {
           const applications = await response.json();
           const tableBody = document.getElementById("applicationTableBody");
@@ -179,7 +179,7 @@
       async function updateStatus(id, newStatus) {
         try {
           const response = await fetch(
-            "/.netlify/functions/updateApplicationStatus",
+            "/.netlify/functions/updateapplicationstatus",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
