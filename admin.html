@@ -97,7 +97,25 @@
         <!-- Rows will be dynamically added here -->
       </tbody>
     </table>
+    <script>
+      // Check session on load
+      window.onload = () => {
+        const sessionToken = localStorage.getItem("sessionToken");
+        const sessionExpiration = localStorage.getItem("sessionExpiration");
 
+        if (
+          !sessionToken ||
+          !sessionExpiration ||
+          new Date().getTime() > sessionExpiration
+        ) {
+          // Redirect to login if no valid session
+          alert("Session expired. Please log in again.");
+          localStorage.removeItem("sessionToken");
+          localStorage.removeItem("sessionExpiration");
+          window.location.href = "index.html";
+        }
+      };
+    </script>
     <script>
       async function fetchApplications() {
         const response = await fetch("/.netlify/functions/getapplications");
