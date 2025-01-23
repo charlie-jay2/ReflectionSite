@@ -32,6 +32,60 @@
       tr:nth-child(even) {
         background-color: #f9f9f9;
       }
+      .view-btn {
+        background-color: #5cb85c;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 4px;
+      }
+      .view-btn:hover {
+        background-color: #4cae4c;
+      }
+      .status-select {
+        padding: 5px;
+        border-radius: 4px;
+      }
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 500px;
+        width: 100%;
+      }
+      .modal-header {
+        font-size: 20px;
+        margin-bottom: 10px;
+      }
+      .modal-body {
+        font-size: 16px;
+      }
+      .close-btn {
+        background-color: #d9534f;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 4px;
+        float: right;
+      }
+      .close-btn:hover {
+        background-color: #c9302c;
+      }
     </style>
   </head>
   <body>
@@ -41,10 +95,8 @@
         <tr>
           <th>Discord Username</th>
           <th>Email</th>
-          <th>Why Job</th>
-          <th>Benefit</th>
-          <th>Experience</th>
-          <th>Extra Notes</th>
+          <th>Status</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody id="applicationTableBody">
@@ -52,27 +104,94 @@
       </tbody>
     </table>
 
+    <!-- Modal -->
+    <div id="applicationModal" class="modal">
+      <div class="modal-content">
+        <button class="close-btn" onclick="closeModal()">Close</button>
+        <div class="modal-header" id="modalHeader"></div>
+        <div class="modal-body" id="modalBody"></div>
+      </div>
+    </div>
+
     <script>
+      const modal = document.getElementById("applicationModal");
+      const modalHeader = document.getElementById("modalHeader");
+      const modalBody = document.getElementById("modalBody");
+
       async function fetchApplications() {
-        const response = await fetch("/.netlify/functions/getapplications");
+        const response = await fetch("/.netlify/functions/getApplications");
         if (response.ok) {
-          const data = await response.json();
+          const applications = await response.json();
           const tableBody = document.getElementById("applicationTableBody");
 
-          data.forEach((app) => {
+          applications.forEach((app) => {
             const row = document.createElement("tr");
             row.innerHTML = `
             <td>${app.discordUsername}</td>
             <td>${app.email}</td>
-            <td>${app.whyJob}</td>
-            <td>${app.benefit}</td>
-            <td>${app.experience.replace(/\n/g, "<br>")}</td>
-            <td>${app.extraNotes || "N/A"}</td>
+            <td>
+              <select class="status-select" onchange="updateStatus('${
+                app._id
+              }', this.value)">
+                <option value="PENDING" ${
+                  app.status === "PENDING" ? "selected" : ""
+                }>PENDING</option>
+                <option value="ACCEPTED" ${
+                  app.status === "ACCEPTED" ? "selected" : ""
+                }>ACCEPTED</option>
+                <option value="REJECTED" ${
+                  app.status === "REJECTED" ? "selected" : ""
+                }>REJECTED</option>
+              </select>
+            </td>
+            <td>
+              <button class="view-btn" onclick="viewApplication(${JSON.stringify(
+                app
+              )})">View</button>
+            </td>
           `;
             tableBody.appendChild(row);
           });
         } else {
           alert("Failed to fetch applications");
+        }
+      }
+
+      function viewApplication(app) {
+        modalHeader.innerText = `Application: ${app.discordUsername}`;
+        modalBody.innerHTML = `
+        <p><strong>Email:</strong> ${app.email}</p>
+        <p><strong>Why Job:</strong><br>${app.whyJob}</p>
+        <p><strong>Benefit:</strong><br>${app.benefit}</p>
+        <p><strong>Experience:</strong><br>${app.experience.replace(
+          /\n/g,
+          "<br>"
+        )}</p>
+        <p><strong>Extra Notes:</strong><br>${app.extraNotes || "N/A"}</p>
+      `;
+        modal.style.display = "flex";
+      }
+
+      function closeModal() {
+        modal.style.display = "none";
+      }
+
+      async function updateStatus(id, newStatus) {
+        try {
+          const response = await fetch(
+            "/.netlify/functions/updateApplicationStatus",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ id, status: newStatus }),
+            }
+          );
+
+          if (!response.ok) {
+            alert("Failed to update status. Please try again.");
+          }
+        } catch (error) {
+          console.error("Error updating status:", error);
         }
       }
 

@@ -14,11 +14,17 @@ exports.handler = async (event) => {
     try {
         const data = JSON.parse(event.body);
 
+        // Add a default status of "PENDING" to the application data
+        const applicationData = {
+            ...data,
+            status: "PENDING", // Default status
+        };
+
         await client.connect();
         const database = client.db("applicationsDB"); // Replace with your database name
         const collection = database.collection("applications");
 
-        const result = await collection.insertOne(data);
+        const result = await collection.insertOne(applicationData);
 
         return {
             statusCode: 200,
