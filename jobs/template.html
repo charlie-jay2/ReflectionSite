@@ -159,5 +159,18 @@
 
       fetchJob();
     </script>
+    <script>
+      // Wait for the page to load before executing the script
+      window.onload = () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const jobId = urlParams.get("id"); // Extract the job ID from the URL query parameter
+
+        // Check if the ID exists in the URL
+        if (jobId) {
+          // Redirect to the clean URL (jobs/ID)
+          window.location.replace(`https://realreflection.co.uk/jobs/${jobId}`);
+        }
+      };
+    </script>
   </body>
 </html>
