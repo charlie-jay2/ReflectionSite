@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title id="jobTitle">Job Title</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(to bottom, #794d11, black 70%);
+        background-size: 100% 100%;
+        background-attachment: fixed;
+      }
+      .container {
+        max-width: 900px;
+        margin: 30px auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        font-size: 28px;
+        margin-bottom: 20px;
+        color: #333;
+      }
+      .section {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+      .section i {
+        font-size: 20px;
+        color: #5cb85c;
+        margin-right: 10px;
+      }
+      .section-content {
+        flex: 1;
+      }
+      .section-content h2 {
+        font-size: 18px;
+        margin: 0;
+        color: #333;
+      }
+      .section-content p {
+        margin: 5px 0;
+        font-size: 16px;
+        color: #666;
+      }
+      ul {
+        margin: 0;
+        padding-left: 20px;
+        font-size: 16px;
+        color: #666;
+      }
+      ul li {
+        margin-bottom: 8px;
+      }
+      button {
+        background-color: #794d11;
+        color: black;
+        border: none;
+        padding: 10px 20px;
+        font-size: 18px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: 0.5s ease-in-out;
+      }
+      button:hover {
+        background-color: black;
+        color: white;
+      }
+      #applicationForm {
+        display: none;
+        margin-top: 20px;
+        flex-direction: column;
+      }
+      label {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      input,
+      textarea {
+        margin-bottom: 15px;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        width: 100%;
+      }
+      textarea {
+        resize: vertical;
+      }
+      /* Confirmation splash screen */
+      #confirmationSplash {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        text-align: center;
+        padding: 20px;
+        z-index: 9999;
+      }
+      #confirmationSplash h2 {
+        font-size: 30px;
+        margin: 20px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 id="jobTitleHeader">Job Title</h1>
+      <p id="jobDescription">Job description will appear here.</p>
+      <h2>Requirements</h2>
+      <ul id="jobRequirements"></ul>
+      <h2>Apply</h2>
+      <a id="applicationLink" href="#" target="_blank">Apply Here</a>
+    </div>
+
+    <script>
+      async function fetchJob() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const jobId = urlParams.get("id");
+
+        if (!jobId) {
+          document.body.innerHTML = "<p>Job not found.</p>";
+          return;
+        }
+
+        const response = await fetch(`/.netlify/functions/getjob?id=${jobId}`);
+        if (response.ok) {
+          const job = await response.json();
+
+          document.getElementById("jobTitle").textContent = job.title;
+          document.getElementById("jobTitleHeader").textContent = job.title;
+          document.getElementById("jobDescription").textContent =
+            job.description;
+
+          const requirementsList = document.getElementById("jobRequirements");
+          job.requirements.forEach((req) => {
+            const li = document.createElement("li");
+            li.textContent = req;
+            requirementsList.appendChild(li);
+          });
+
+          const applicationLink = document.getElementById("applicationLink");
+          applicationLink.href = job.applicationLink;
+        } else {
+          document.body.innerHTML = "<p>Failed to load job details.</p>";
+        }
+      }
+
+      fetchJob();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careers at Reflection</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(to bottom, #794d11, black 70%);
+        background-size: 100% 100%;
+        background-attachment: fixed;
+      }
+      header {
+        color: white;
+        text-align: center;
+        padding: 20px 0;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 36px;
+      }
+      .container {
+        max-width: 900px;
+        margin: 30px auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .section-title {
+        font-size: 28px;
+        color: #333;
+        margin-bottom: 20px;
+      }
+      .job-listing {
+        border-bottom: 1px solid #ddd;
+        padding: 15px 0;
+      }
+      .job-listing:last-child {
+        border-bottom: none;
+      }
+      .job-listing h2 {
+        font-size: 20px;
+        margin: 0 0 5px;
+      }
+      .job-listing p {
+        margin: 0 0 10px;
+        color: #666;
+      }
+      .job-listing a {
+        color: #794d11;
+        text-decoration: none;
+        font-weight: bold;
+        transition: 0.5s ease-in-out;
+      }
+      .job-listing a:hover {
+        text-decoration: underline;
+        color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Careers at Reflection</h1>
+    </header>
+
+    <div class="container">
+      <div class="section-title">Current Opportunities</div>
+      <div id="vacanciesContainer">
+        <!-- Job listings will be dynamically added here -->
+        <p>Loading job opportunities...</p>
+      </div>
+    </div>
+
+    <script>
+      async function loadVacancies() {
+        const response = await fetch("/.netlify/functions/getjobs");
+        const vacanciesContainer =
+          document.getElementById("vacanciesContainer");
+
+        if (response.ok) {
+          const jobs = await response.json();
+
+          // Clear existing content
+          vacanciesContainer.innerHTML = "";
+
+          jobs.forEach((job) => {
+            const currentDate = new Date();
+            const deadline = new Date(job.applicationDeadline);
+
+            // Only display jobs that are not past the deadline
+            if (currentDate <= deadline) {
+              const jobHTML = `
+                <div class="job-listing">
+                  <h2>${job.title}</h2>
+                  <p>${job.description.substring(0, 150)}...</p>
+                  <h3>Application Deadline</h3>
+                  <p>${deadline.toLocaleDateString()} at ${deadline.toLocaleTimeString()}</p>
+                  <a href="/jobs/template.html?id=${
+                    job._id
+                  }" target="_blank">View More</a>
+                </div>
+              `;
+
+              vacanciesContainer.innerHTML += jobHTML;
+            }
+          });
+
+          if (vacanciesContainer.innerHTML === "") {
+            vacanciesContainer.innerHTML =
+              "<p>No current opportunities available.</p>";
+          }
+        } else {
+          vacanciesContainer.innerHTML =
+            "<p>Failed to load job opportunities. Please try again later.</p>";
+        }
+      }
+
+      loadVacancies();
+    </script>
+  </body>
+</html>
