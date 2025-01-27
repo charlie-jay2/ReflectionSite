@@ -10,3 +10,9 @@
   from = "/.netlify/functions/*"
   to = "/.netlify/functions/:splat"
   status = 200
+
+[[redirects]]
+  from = "/jobs/:id"
+  to = "/jobs/template.html?id=:id"
+  status = 200
+  force = true
