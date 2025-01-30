@@ -149,12 +149,15 @@
               <td>${job.description.substring(0, 50)}...</td>
               <td>${deadline}</td>
               <td>
-                <button class="edit-btn" onclick="editJob('${job._id}', '${
-              job.title
-            }', '${job.description}')">Edit</button>
-                <button class="delete-btn" onclick="deleteJob('${
-                  job._id
-                }')">Delete</button>
+ <button class="edit-btn" 
+  onclick="editJob('${job._id}', '${job.title.replace(
+              /'/g,
+              "\\'"
+            )}', '${job.description.replace(/'/g, "\\'")}', '${
+              job.applicationDeadline
+            }')">
+  Edit
+</button>
               </td>
             `;
             tableBody.appendChild(row);
