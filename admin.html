@@ -71,16 +71,17 @@
         text-align: left;
         padding: 10px;
         border: 1px solid #ddd;
-        color: white; /* Set table text color to white */
+        color: white;
       }
       th {
         background-color: #794d11;
         color: white;
       }
       tr:nth-child(even) {
-        background-color: #f9f9f9;
+        background-color: #333;
       }
-      .delete-btn {
+      .delete-btn,
+      .edit-btn {
         background-color: #d9534f;
         color: white;
         border: none;
@@ -88,76 +89,35 @@
         border-radius: 4px;
         cursor: pointer;
         font-size: 14px;
+        margin-right: 5px;
+      }
+      .edit-btn {
+        background-color: #5bc0de;
       }
       .delete-btn:hover {
         background-color: #c9302c;
       }
-      .status-select {
-        padding: 5px;
-        border-radius: 4px;
-        font-size: 14px;
-      }
-      .status-select option[value="PENDING"] {
-        color: black;
-      }
-      .status-select option[value="ACCEPTED"] {
-        color: green;
-      }
-      .status-select option[value="REJECTED"] {
-        color: red;
-      }
-      .application-details {
-        margin-top: 10px;
-        padding: 15px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        background-color: #f9f9f9;
-        margin-bottom: 20px;
-        color: black;
-      }
-      .jobTableBody {
-        color: white; /* Ensure the text inside the job table body is white */
+      .edit-btn:hover {
+        background-color: #31b0d5;
       }
     </style>
   </head>
   <body>
     <h1>Admin - Job Management</h1>
 
-    <!-- Job Management Section -->
     <div class="form-container">
       <h2>Add New Job</h2>
       <form id="addJobForm">
         <label>Job Title:</label>
-        <input
-          type="text"
-          id="jobTitle"
-          placeholder="Enter job title"
-          required />
-
+        <input type="text" id="jobTitle" required />
         <label>Description:</label>
-        <textarea
-          id="jobDescription"
-          placeholder="Enter job description"
-          rows="4"
-          required></textarea>
-
-        <label>Requirements (comma-separated):</label>
-        <input
-          type="text"
-          id="jobRequirements"
-          placeholder="E.g., Requirement1, Requirement2"
-          required />
-
+        <textarea id="jobDescription" rows="4" required></textarea>
+        <label>Requirements:</label>
+        <input type="text" id="jobRequirements" required />
         <label>Application Link:</label>
-        <input
-          type="url"
-          id="jobLink"
-          placeholder="Enter application link"
-          required />
-
+        <input type="url" id="jobLink" required />
         <label>Application Deadline:</label>
         <input type="datetime-local" id="jobDeadline" required />
-
         <button type="submit">Add Job</button>
       </form>
     </div>
@@ -171,20 +131,16 @@
           <th>Actions</th>
         </tr>
       </thead>
-      <tbody id="jobTableBody" class="jobTableBody">
-        <!-- Job rows will be dynamically added here -->
-      </tbody>
+      <tbody id="jobTableBody"></tbody>
     </table>
 
     <script>
-      // Function to fetch jobs and display them
       async function fetchJobs() {
         const response = await fetch("/.netlify/functions/getjobs");
         if (response.ok) {
           const jobs = await response.json();
           const tableBody = document.getElementById("jobTableBody");
-
-          tableBody.innerHTML = ""; // Clear table body before adding new rows
+          tableBody.innerHTML = "";
           jobs.forEach((job) => {
             const deadline = new Date(job.applicationDeadline).toLocaleString();
             const row = document.createElement("tr");
@@ -193,6 +149,9 @@
               <td>${job.description.substring(0, 50)}...</td>
               <td>${deadline}</td>
               <td>
+                <button class="edit-btn" onclick="editJob('${job._id}', '${
+              job.title
+            }', '${job.description}')">Edit</button>
                 <button class="delete-btn" onclick="deleteJob('${
                   job._id
                 }')">Delete</button>
@@ -200,67 +159,63 @@
             `;
             tableBody.appendChild(row);
           });
-        } else {
-          alert("Failed to fetch jobs.");
         }
       }
 
-      // Function to delete a job
       async function deleteJob(jobId) {
-        const confirmDelete = confirm(
-          "Are you sure you want to delete this job?"
-        );
-        if (confirmDelete) {
+        if (confirm("Are you sure you want to delete this job?")) {
           const response = await fetch("/.netlify/functions/deletejob", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ jobId }),
           });
-
-          if (response.ok) {
-            alert("Job deleted successfully!");
-            fetchJobs(); // Refresh the jobs list
-          } else {
-            alert("Failed to delete job.");
-          }
+          if (response.ok) fetchJobs();
         }
       }
 
-      // Handle form submission to add a new job
-      async function addJob(event) {
-        event.preventDefault();
+      async function editJob(id, title, description) {
+        const newTitle = prompt("Edit Job Title:", title);
+        const newDescription = prompt("Edit Job Description:", description);
+        if (newTitle && newDescription) {
+          await fetch("/.netlify/functions/editjob", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              id,
+              title: newTitle,
+              description: newDescription,
+            }),
+          });
+          fetchJobs();
+        }
+      }
 
-        const title = document.getElementById("jobTitle").value;
-        const description = document.getElementById("jobDescription").value;
-        const requirements = document
-          .getElementById("jobRequirements")
-          .value.split(",");
-        const applicationLink = document.getElementById("jobLink").value;
-        const applicationDeadline =
-          document.getElementById("jobDeadline").value;
-
-        const response = await fetch("/.netlify/functions/addjob", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            title,
-            description,
-            requirements,
-            applicationLink,
-            applicationDeadline,
-          }),
+      document
+        .getElementById("addJobForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const title = document.getElementById("jobTitle").value;
+          const description = document.getElementById("jobDescription").value;
+          const requirements = document
+            .getElementById("jobRequirements")
+            .value.split(",");
+          const applicationLink = document.getElementById("jobLink").value;
+          const applicationDeadline =
+            document.getElementById("jobDeadline").value;
+          await fetch("/.netlify/functions/addjob", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              title,
+              description,
+              requirements,
+              applicationLink,
+              applicationDeadline,
+            }),
+          });
+          fetchJobs();
         });
 
-        if (response.ok) {
-          alert("Job added successfully!");
-          fetchJobs(); // Refresh the jobs list
-        } else {
-          alert("Failed to add job.");
-        }
-      }
-
-      // Initialize the page by loading the job list
-      document.getElementById("addJobForm").addEventListener("submit", addJob);
       fetchJobs();
     </script>
   </body>
