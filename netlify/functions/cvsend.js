@@ -1,7 +1,6 @@
 const formidable = require('formidable');
 const { fetch } = require('undici');
 const fs = require('fs');
-const { Readable } = require('stream'); // Use Readable stream for file transfer
 
 exports.handler = async (event) => {
     if (event.httpMethod !== "POST") {
@@ -12,8 +11,8 @@ exports.handler = async (event) => {
     }
 
     try {
-        // Use formidable to parse incoming form data
         const form = new formidable.IncomingForm();
+
         const data = await new Promise((resolve, reject) => {
             form.parse(event, (err, fields, files) => {
                 if (err) {
@@ -24,20 +23,18 @@ exports.handler = async (event) => {
             });
         });
 
-        // Extract file (CV)
         const file = data.files.cv ? data.files.cv[0] : null;
-
         if (!file) {
             throw new Error("No file found in the request.");
         }
 
-        // Validate file type (PDF or DOCX)
+        // Validate file type
         const validTypes = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
         if (!validTypes.includes(file.headers['content-type'])) {
             throw new Error("Invalid file type. Only PDF and DOCX are allowed.");
         }
 
-        // Send file to Discord webhook
+        // Send the file to Discord Webhook
         const formData = new FormData();
         formData.append("file", fs.createReadStream(file.filepath), file.originalFilename);
 
@@ -47,7 +44,7 @@ exports.handler = async (event) => {
             throw new Error("Discord webhook URL is not configured.");
         }
 
-        // Send the file as form data to the Discord webhook
+        // Send the file to Discord
         const response = await fetch(webhookURL, {
             method: "POST",
             headers: formData.getHeaders(),
