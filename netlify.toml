@@ -1,19 +1,11 @@
-[[redirects]]
-  from = "/*"
-  to = "404/404.html"
-  status = 404
-
 [build]
   functions = "netlify/functions"
 
-[[redirects]]
-  from = "/.netlify/functions/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
+[build.environment]
+  MONGO_URI = "mongodb+srv://admin:fredfred123@lx-tech.zoryjvs.mongodb.net/"
 
-[[redirects]]
-  from = "/jobs/:id"
-  to = "/jobs/template.html?id=:id"
-  status = 200
-  force = true
+[dev]
+  functions = "netlify/functions"
 
+[[plugins]]
+  package = "@netlify/plugin-functions-installation"
