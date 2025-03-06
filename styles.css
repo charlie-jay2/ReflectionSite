@@ -3,20 +3,77 @@ html,
 body {
   height: 100%;
   margin: 0;
+  overflow: hidden;
   background-image: linear-gradient(to bottom, #794d11, black 40%);
-  overflow-x: hidden; /* Prevent horizontal scrolling */
-  overflow-y: auto; /* Allow vertical scrolling */
 }
 
-/*
-Theme Name: Reflection Bot Site
-Theme URI: https://flexagroup.co.uk
-Author: Flexa Group
-Author URI: https://flexagroup.co.uk
-Description: A custom WordPress theme for the Reflection Bot site.
-Version: 1.0
-License: GNU General Public License v2 or later
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Tags: custom-theme
-Text Domain: reflection-bot-site
-*/
+body {
+  background-image: url("assets/Site Background.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Textbox container */
+.textbox-container {
+  position: relative;
+  width: 500px;
+  height: 500px;
+  margin: 15vh 0 0 10vh;
+}
+
+.textbox {
+  width: 80%;
+  transition: transform 0.6s ease-in-out;
+}
+
+.textbox:hover {
+  transform: scale(1.04);
+}
+
+.textboxtext {
+  position: absolute;
+  top: 19%;
+  left: 5%;
+  width: 70%;
+  z-index: 1000;
+}
+
+.textboxbutton {
+  position: absolute;
+  top: 72%;
+  left: 6.5%;
+  width: 25%;
+  transition: transform 0.6s ease-in-out;
+}
+
+.textboxbutton:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+/* Buttons */
+.button-container {
+  position: absolute;
+  top: 14%;
+  left: 70%;
+}
+
+.button1,
+.button2,
+.button3 {
+  display: block;
+  width: 360px;
+  margin-bottom: 5px;
+  transition: transform 0.6s ease-in-out;
+}
+
+.button1 {
+  opacity: 0.6;
+}
+
+.button2:hover,
+.button3:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}

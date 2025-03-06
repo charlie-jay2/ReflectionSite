@@ -1,60 +1,83 @@
-// adminAction.js - This function will handle actions like Suspend, Disable, Blacklist, Enable
-
 const { MongoClient } = require("mongodb");
 
-const uri = process.env.MONGO_URI;  // MongoDB URI (store in environment variables)
-const dbName = "EvoVisionDB";  // Database name
-const collectionName = "AdBoards";  // Collection name
+const mongoURI = process.env.MONGO_URI; // Make sure this is set in your Netlify environment variables
+const dbName = "EvoVisionDB";
+const collectionName = "AdBoards";
 
-// Handler for the serverless function
 exports.handler = async (event, context) => {
-    const { action, gameID, additionalData } = JSON.parse(event.body);  // Get action data from the request
+    if (event.httpMethod === "POST") {
+        try {
+            const { action, gameID } = JSON.parse(event.body);
+            const mongoClient = new MongoClient(mongoURI);
+            await mongoClient.connect();
+            const db = mongoClient.db(dbName);
+            const collection = db.collection(collectionName);
 
-    let updateData = {};
+            const gameData = await collection.findOne({ gameID });
 
-    try {
-        const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-        await client.connect();
-        const collection = client.db(dbName).collection(collectionName);
-
-        switch (action) {
-            case "Suspend":
-                updateData = { suspended: true, suspendedUntil: Date.now() + additionalData };
-                break;
-            case "Disable":
-                updateData = { active: false };  // Disable EvoVision (turn off screens)
-                break;
-            case "Blacklist":
-                updateData = { blacklisted: true };  // Blacklist the game permanently
-                break;
-            case "Enable":
-                updateData = { active: true, suspended: false };  // Enable EvoVision
-                break;
-            default:
+            if (!gameData) {
                 return {
-                    statusCode: 400,
-                    body: JSON.stringify({ message: "Invalid action." }),
+                    statusCode: 404,
+                    body: JSON.stringify({ error: "Game not found" }),
                 };
+            }
+
+            switch (action) {
+                case "suspend":
+                    // Add suspension logic (e.g., add time)
+                    await collection.updateOne(
+                        { gameID },
+                        { $set: { suspended: true } }
+                    );
+                    break;
+
+                case "disable":
+                    // Disable the board images, make them black
+                    await collection.updateOne(
+                        { gameID },
+                        { $set: { active: false } }
+                    );
+                    break;
+
+                case "blacklist":
+                    // Blacklist the game
+                    await collection.updateOne(
+                        { gameID },
+                        { $set: { blacklisted: true } }
+                    );
+                    break;
+
+                case "enable":
+                    // Re-enable the board images
+                    await collection.updateOne(
+                        { gameID },
+                        { $set: { active: true, suspended: false, blacklisted: false } }
+                    );
+                    break;
+
+                default:
+                    return {
+                        statusCode: 400,
+                        body: JSON.stringify({ error: "Invalid action" }),
+                    };
+            }
+
+            await mongoClient.close();
+            return {
+                statusCode: 200,
+                body: JSON.stringify({ success: true }),
+            };
+        } catch (error) {
+            console.error(error);
+            return {
+                statusCode: 500,
+                body: JSON.stringify({ error: "Failed to perform action" }),
+            };
         }
-
-        // Update the game's status in MongoDB
-        const result = await collection.updateOne(
-            { gameID },
-            { $set: updateData },
-            { upsert: true }
-        );
-
-        await client.close();
-
+    } else {
         return {
-            statusCode: 200,
-            body: JSON.stringify({ success: true, message: `Action ${action} applied to game ${gameID}.` }),
-        };
-    } catch (err) {
-        console.error(err);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ success: false, message: "Error applying action." }),
+            statusCode: 405,
+            body: JSON.stringify({ error: "Method Not Allowed" }),
         };
     }
 };
