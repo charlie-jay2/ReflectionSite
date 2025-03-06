@@ -1,6 +1,6 @@
 const { MongoClient } = require("mongodb");
 
-const mongoURI = process.env.MONGO_URI; // Make sure this is set in your Netlify environment variables
+const mongoURI = process.env.MONGO_URI; // The MongoDB URI
 const dbName = "EvoVisionDB";
 const collectionName = "AdBoards";
 
@@ -22,37 +22,28 @@ exports.handler = async (event, context) => {
                 };
             }
 
+            let updated = {};
+            let responseMessage = "Action performed successfully";
+
             switch (action) {
                 case "suspend":
-                    // Add suspension logic (e.g., add time)
-                    await collection.updateOne(
-                        { gameID },
-                        { $set: { suspended: true } }
-                    );
+                    updated = { suspended: true };
+                    responseMessage = `Game with ID ${gameID} suspended.`;
                     break;
 
                 case "disable":
-                    // Disable the board images, make them black
-                    await collection.updateOne(
-                        { gameID },
-                        { $set: { active: false } }
-                    );
+                    updated = { active: false };
+                    responseMessage = `Game with ID ${gameID} disabled.`;
                     break;
 
                 case "blacklist":
-                    // Blacklist the game
-                    await collection.updateOne(
-                        { gameID },
-                        { $set: { blacklisted: true } }
-                    );
+                    updated = { blacklisted: true };
+                    responseMessage = `Game with ID ${gameID} blacklisted.`;
                     break;
 
                 case "enable":
-                    // Re-enable the board images
-                    await collection.updateOne(
-                        { gameID },
-                        { $set: { active: true, suspended: false, blacklisted: false } }
-                    );
+                    updated = { active: true, suspended: false, blacklisted: false };
+                    responseMessage = `Game with ID ${gameID} enabled.`;
                     break;
 
                 default:
@@ -62,10 +53,13 @@ exports.handler = async (event, context) => {
                     };
             }
 
+            await collection.updateOne({ gameID }, { $set: updated });
+
             await mongoClient.close();
+
             return {
                 statusCode: 200,
-                body: JSON.stringify({ success: true }),
+                body: JSON.stringify({ success: true, message: responseMessage }),
             };
         } catch (error) {
             console.error(error);
